@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.lang.RuntimeException;
 import java.util.LinkedList;
 
 /**
@@ -153,6 +154,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             this.recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS); // RAW_AMR);
             this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC); //AMR_NB);
+            this.recorder.setAudioEncodingBitRate(16000 * 16);
+            this.recorder.setAudioSamplingRate(16000);
             this.tempFile = generateTempFile();
             this.recorder.setOutputFile(this.tempFile);
             try {
@@ -164,8 +167,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (RuntimeException e) {
+              e.printStackTrace();
             }
 
+            LOG.d(LOG_TAG, "Sending back error.");
             sendErrorStatus(MEDIA_ERR_ABORTED);
             break;
         case RECORD:
