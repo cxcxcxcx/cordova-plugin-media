@@ -63,7 +63,7 @@ public class AudioHandler extends CordovaPlugin {
     private CallbackContext messageChannel;
 
 
-    public static String [] permissions = { Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public static String [] permissions = { Manifest.permission.RECORD_AUDIO };
     public static int RECORD_AUDIO = 0;
     public static int WRITE_EXTERNAL_STORAGE = 1;
 
@@ -82,10 +82,10 @@ public class AudioHandler extends CordovaPlugin {
     }
 
 
-    protected void getWritePermission(int requestCode)
-    {
-        PermissionHelper.requestPermission(this, requestCode, permissions[WRITE_EXTERNAL_STORAGE]);
-    }
+    // protected void getWritePermission(int requestCode)
+    // {
+    //     PermissionHelper.requestPermission(this, requestCode, permissions[WRITE_EXTERNAL_STORAGE]);
+    // }
 
 
     protected void getMicPermission(int requestCode)
@@ -284,7 +284,7 @@ public class AudioHandler extends CordovaPlugin {
      */
     public void startRecordingAudio(String id, String file) {
         AudioPlayer audio = getOrCreatePlayer(id, file);
-        audio.startRecording(file);
+        audio.startRecording(file, this.cordova.getActivity().getApplicationContext());
     }
 
     /**
@@ -306,7 +306,7 @@ public class AudioHandler extends CordovaPlugin {
     public void resumeRecordingAudio(String id) {
         AudioPlayer audio = players.get(id);
         if (audio != null) {
-            audio.resumeRecording();
+            audio.resumeRecording(this.cordova.getActivity().getApplicationContext());
         }
     }
 
@@ -538,16 +538,9 @@ public class AudioHandler extends CordovaPlugin {
 
     private void promptForRecord()
     {
-        if(PermissionHelper.hasPermission(this, permissions[WRITE_EXTERNAL_STORAGE])  &&
-                PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
+        if(PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
             this.startRecordingAudio(recordId, FileHelper.stripFileProtocol(fileUriStr));
-        }
-        else if(PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO]))
-        {
-            getWritePermission(WRITE_EXTERNAL_STORAGE);
-        }
-        else
-        {
+        } else {
             getMicPermission(RECORD_AUDIO);
         }
 
