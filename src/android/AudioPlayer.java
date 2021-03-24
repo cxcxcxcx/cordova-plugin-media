@@ -158,7 +158,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             try {
                 this.tempFile = generateTempFile(context);
                 LOG.d(LOG_TAG, "temp file", this.tempFile);
-                this.recorder.setOutputFile(this.tempFile);
+                this.recorder.setOutputFile(this.tempFile.getAbsolutePath());
                 this.recorder.prepare();
                 this.recorder.start();
                 this.setState(STATE.MEDIA_RUNNING);
